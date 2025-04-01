@@ -65,6 +65,22 @@ app.get("/api/v1/all-posts/:id", async (req, res) => {
   }
 });
 
+app.put("/api/v1/update-posts/:id", async (req, res) => {
+  const id = req.params.id;
+  const { blog_title, blog_content } = req.body;
+
+  try {
+    const update_query = "UPDATE blogs SET blog_title=$1, blog_content=$2 WHERE blog_id=$3  RETURNING *";
+
+    const result = await connection.query(update_query, [blog_title, blog_content, id]);
+    res.status(200).json(result.rows[0]);
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.listen(3000, (req, res) => {
   console.log("Server is running on port 3000");
 });
