@@ -37,6 +37,19 @@ app.post("/api/v1/add-post", async (req, res) => {
   }
 });
 
+app.get("/api/v1/all-posts", async (req, res) => {
+  try {
+    const fetch_query = "SELECT * FROM blogs";
+
+    const result = await connection.query(fetch_query);
+    res.status(200).json(result.rows);
+    
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.listen(3000, (req, res) => {
   console.log("Server is running on port 3000");
 });
