@@ -30,7 +30,7 @@ app.post("/api/v1/add-post", async (req, res) => {
       blog_content,
     ]);
     res.status(200).json(result.rows[0]);
-    
+
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal server error" });
@@ -43,7 +43,22 @@ app.get("/api/v1/all-posts", async (req, res) => {
 
     const result = await connection.query(fetch_query);
     res.status(200).json(result.rows);
-    
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/api/v1/all-posts/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const fetchById_query = "SELECT * FROM blogs WHERE blog_id=$1";
+
+    const result = await connection.query(fetchById_query, [id]);
+    res.status(200).json(result.rows[0]);
+
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal server error" });
