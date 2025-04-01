@@ -18,6 +18,25 @@ const connection = new Client({
 
 connection.connect().then(() => console.log("Connected Successfully!"));
 
+app.post("/api/v1/add-post", async (req, res) => {
+  const { blog_title, blog_content } = req.body;
+
+  try {
+    const insert_query =
+      "INSERT INTO blogs (blog_title, blog_content) VALUES ($1,$2) RETURNING *";
+
+    const result = await connection.query(insert_query, [
+      blog_title,
+      blog_content,
+    ]);
+    res.status(200).json(result.rows[0]);
+    
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.listen(3000, (req, res) => {
   console.log("Server is running on port 3000");
 });
