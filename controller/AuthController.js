@@ -91,7 +91,7 @@ exports.login = async (req, res) => {
   }
 };
 
-const authenticateToken = (req, res, next) => {
+exports.authenticateToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
 
@@ -108,14 +108,14 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-const isAdmin = (req, res, next) => {
+exports.isAdmin = (req, res, next) => {
   if (!req.user || req.user.type !== "admin") {
     return res.status(403).json({ error: "Admin access required" });
   }
   next();
 };
 
-const isCustomer = (req, res, next) => {
+exports.isCustomer = (req, res, next) => {
   if (!req.user || req.user.type !== "customer") {
     return res
       .status(403)
