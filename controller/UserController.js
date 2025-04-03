@@ -95,3 +95,36 @@ exports.updateUser = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+exports.deleteUser = async (req, res) => {
+  const userEmail = req.params.email;
+
+  try {
+    const checkUserQuery = "SELECT email FROM users WHERE email = $1";
+    const userCheck = await connection.query(checkUserQuery, [userEmail]);
+
+    if (userCheck.rows.length === 0) {
+      return res.status(404).json({
+        message: "User not found",
+        email: userEmail,
+      });
+    }
+
+    if (req.user.email === userEmail) {
+      return res.status(403).json({
+        message: "Admins can't delete their own accounts",
+      });
+    }
+
+    const delete_query = "DELETE FROM users WHERE email = $1 RETURNING email";
+    const result = await connection.query(delete_query, [userEmail]);
+
+    res.status(200).json({
+      message: "User deleted successfully",
+      email: result.rows[0].email,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
