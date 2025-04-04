@@ -5,12 +5,13 @@ exports.createPost = async (req, res) => {
 
   try {
     const insert_query =
-      "INSERT INTO blogs (blog_title, blog_content, user_id) VALUES ($1, $2, $3) RETURNING *";
+      "INSERT INTO blogs (blog_title, blog_content, user_id, user_email) VALUES ($1, $2, $3, $4) RETURNING *";
 
     const result = await connection.query(insert_query, [
       blog_title,
       blog_content,
       req.user.id,
+      req.user.email
     ]);
 
     res.status(200).json({
@@ -58,6 +59,29 @@ exports.getPostById = async (req, res) => {
     res.status(200).json({
       message: "Post retrieved successfully",
       post: result.rows[0],
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.findPostsByUserEmail = async (req, res) => {
+  const email = req.params.email;
+
+  try {
+    const fetchById_query =
+      "SELECT b.*, u.email FROM blogs b JOIN users u ON b.user_id = u.id WHERE b.user_email = $1";
+
+    const result = await connection.query(fetchById_query, [email]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    res.status(200).json({
+      message: "Post retrieved successfully",
+      post: result.rows,
     });
   } catch (error) {
     console.log(error);
