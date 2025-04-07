@@ -26,7 +26,7 @@ exports.createPost = async (req, res) => {
 
 exports.getAllPosts = async (req, res) => {
   try {
-    const fetch_query = "SELECT blog_title, blog_content FROM blogs";
+    const fetch_query = "SELECT blog_title, blog_content, created_at, user_email FROM blogs";
 
     const result = await connection.query(fetch_query);
 

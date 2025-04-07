@@ -128,3 +128,29 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+exports.getCurrentUser = async (req, res) => {
+  const userEmail = req.user.email;
+
+  try {
+    if (!req.user?.email) {
+      return res.status(400).json({ error: "Invalid user data in token" });
+    }
+
+    const result = await connection.query(
+      "SELECT id, first_name, last_name, email, type FROM users WHERE email = $1",
+      [userEmail]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json({
+      message: "Successful",
+      user: result.rows[0],
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
